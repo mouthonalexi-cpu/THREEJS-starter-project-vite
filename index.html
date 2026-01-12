@@ -4,10 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Threjs Starter Pack With Vite</title>
+    <link rel="stylesheet" href="/site.css">
   </head>
   <body>
     <p class="license">Created By: <a href="https://github.com/ToonKru3/THREEJS-starter-project-vite">Supadett Pinsuwannabut</a></p>
     <canvas class="webgl"></canvas>
-    <script type="module" src="/src/main.js"></script>
+<script type="module" src="/src/main.js"></script>
+    
+    <header class="nav ui">
+  <div class="container nav-inner">
+    <a class="brand" href="/index.html">AM Composit</a>
+    <nav class="nav-links">
+      <a href="/produit.html">Produit</a>
+      <a href="/boutique.html">Boutique</a>
+    </nav>
+  </div>
+</header>
+
+<div class="ui-panel container">
+  <div class="card">
+    <span class="badge">3D</span>
+    <h1 style="margin:10px 0 6px">Mon produit</h1>
+    <p class="muted" style="margin:0">Clique pour explorer, puis va aux infos ou à la boutique.</p>
+    <div class="btn-row">
+      <a class="btn" href="/produit.html">Infos produit</a>
+      <a class="btn btn-primary" href="/boutique.html">Boutique</a>
+    </div>
+  </div>
+</div>
+
   </body>
 </html>
