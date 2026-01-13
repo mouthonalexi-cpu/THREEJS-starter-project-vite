@@ -4,11 +4,12 @@ html, body {
   height: 100%;
 }
 
-body {
+body{
   margin: 0;
-  overflow: hidden; /* évite les scrollbars */
-  background: #000; /* fond noir derrière la 3D */
+  overflow: hidden;
+  background: radial-gradient(900px 600px at 20% 10%, #1a1d24 0%, #0b0c10 55%, #050608 100%);
 }
+
 
 /* Si ton template utilise <canvas class="webgl"> */
 canvas.webgl {
