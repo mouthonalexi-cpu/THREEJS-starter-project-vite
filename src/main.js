@@ -36,11 +36,13 @@ camera.position.set(2, 1.5, 4);
 scene.add(camera);
 
 const renderer = new THREE.WebGLRenderer({
-  canvas,
+  canvas: canvas,
   antialias: true,
   alpha: true
 });
-renderer.setClearAlpha(0);
+
+renderer.setClearColor(0x000000, 0); // fond transparent
+
 
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -90,8 +92,7 @@ loader.load(
     control.target.set(0, 0, 0);
     control.update();
 
-    // On cache le cube quand le modèle est là
-    debugCube.visible = false;
+  
   },
   undefined,
   (err) => {

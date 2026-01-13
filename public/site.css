@@ -13,7 +13,7 @@ html,body{height:100%}
 
 body { font-weight: 300; 
   margin:0;
-  font-family: "Calibri Light","Calibri","Segoe UI",Arial,sans-serif;
+  font-family: "Calibri Light","Calibri","Calibri",Arial,sans-serif;
   background: radial-gradient(1200px 700px at 20% 10%, #151830, var(--bg));
   color:var(--text);
 }
@@ -128,3 +128,16 @@ a:hover{opacity:.9}
 .ui{ position: fixed; left:0; right:0; top:0; z-index: 10; }
 .ui-panel{ position: fixed; left:0; right:0; bottom: 18px; z-index: 10; }
 canvas{ position: fixed; inset: 0; z-index: 0; display:block; }
+
+.brand{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.brand-logo{
+  height: 40px;   /* change ici */
+  width: auto;
+  display: block;
+}

@@ -1,20 +1,166 @@
 /* style.css (racine du projet) : styles "tech" pour la page 3D */
 
-html, body {
+
+html, body{
+  height: 100%;
+  margin: 0;
+}
+
+
+canvas.webgl{
+  display: block;
+  width: 100%;
   height: 100%;
 }
+/* ===========================
+   PUBLICATIONS (Pinterest + viewer)
+   =========================== */
 
-body{
-  margin: 0;
-  overflow: hidden;
-  background: radial-gradient(900px 600px at 20% 10%, #1a1d24 0%, #0b0c10 55%, #050608 100%);
+.pub-wrap{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 14px;
 }
 
+/* Masonry via columns (Pinterest) */
+.pub-masonry{
+  column-count: 4;
+  column-gap: 8px;     /* plus collé */
+}
 
-/* Si ton template utilise <canvas class="webgl"> */
-canvas.webgl {
+.pub-pin{
+  break-inside: avoid;
+  margin: 0 0 8px;     /* plus collé */
+  cursor: zoom-in;
+  position: relative;
+}
+
+.pub-pin img{
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 0;    /* mets 10px si tu veux arrondi */
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Responsive */
+@media (max-width: 1100px){ .pub-masonry{ column-count: 3; } }
+@media (max-width: 820px){  .pub-masonry{ column-count: 2; } }
+@media (max-width: 520px){  .pub-masonry{ column-count: 1; } }
+
+/* Viewer style Google Images */
+.pub-viewer.hidden{ display: none; }
+
+.pub-viewer{
   position: fixed;
   inset: 0;
-  display: block;
-  outline: none;
+  z-index: 9999;
+  background: rgba(0,0,0,0.78);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+}
+
+.pub-viewer-top{
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.pub-vleft, .pub-vright{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.pub-vbtn{
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  user-select: none;
+}
+.pub-vbtn:hover{ background: rgba(255,255,255,0.12); }
+
+.pub-vcounter{
+  font-size: 13px;
+  color: rgba(255,255,255,0.85);
+}
+
+.pub-stage{
+  position: absolute;
+  inset: 56px 0 46px 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  touch-action: none;
+}
+
+.pub-stage img{
+  max-width: 92vw;
+  max-height: calc(92vh - 120px);
+  object-fit: contain;
+  transform: translate3d(0,0,0) scale(1);
+  transform-origin: center center;
+  will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+  cursor: grab;
+  background: transparent;
+}
+.pub-stage img.dragging{ cursor: grabbing; }
+
+.pub-viewer-bottom{
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 14px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  pointer-events: none;
+  text-align: center;
+}
+
+.pub-vnav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: rgba(0,0,0,0.35);
+  color: #fff;
+  font-size: 34px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+.pub-vnav:hover{ background: rgba(255,255,255,0.12); }
+.pub-vnav.prev{ left: 12px; }
+.pub-vnav.next{ right: 12px; }
+
+@media (max-width: 520px){
+  .pub-vnav{ width: 42px; height: 42px; font-size: 30px; }
 }

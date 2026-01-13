@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Publications</title>
+
+  <!-- Comme tes autres pages -->
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="pub-page">
+
+  <!-- NAV (reprend tes liens, adapte si besoin) -->
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/index.html" aria-label="Accueil">
+        <!-- Mets ton logo dans public/images/logo.png -->
+        <img src="/images/logo.png" alt="AM Composit" class="brand-logo">
+      </a>
+
+      <nav class="nav-links">
+        <a href="/index.html">Accueil 3D</a>
+        <a href="/produit.html">Produit</a>
+        <a href="/boutique.html">Boutique</a>
+        <a href="/publication.html" aria-current="page">Publications</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pub-wrap">
+    <div class="pub-masonry" id="masonry">
+      <!-- Mets tes images dans public/images/publications/ -->
+      <div class="pub-pin" data-full="/images/publications/img1.jpg" data-caption="Exemple 1">
+        <img src="/images/publications/img1.jpg" alt="Exemple 1" loading="lazy">
+      </div>
+
+      <div class="pub-pin" data-full="/images/publications/img2.jpg" data-caption="Exemple 2">
+        <img src="/images/publications/img2.jpg" alt="Exemple 2" loading="lazy">
+      </div>
+
+      <div class="pub-pin" data-full="/images/publications/img3.jpg" data-caption="Exemple 3">
+        <img src="/images/publications/img3.jpg" alt="Exemple 3" loading="lazy">
+      </div>
+
+      <div class="pub-pin" data-full="/images/publications/img4.jpg" data-caption="Exemple 4">
+        <img src="/images/publications/img4.jpg" alt="Exemple 4" loading="lazy">
+      </div>
+
+      <!-- Duplique des blocs pub-pin autant que tu veux -->
+    </div>
+  </main>
+
+  <!-- Viewer plein écran style Google Images -->
+  <div id="viewer" class="pub-viewer hidden" aria-hidden="true">
+    <div class="pub-viewer-top">
+      <div class="pub-vleft">
+        <button class="pub-vbtn" id="vClose" aria-label="Fermer">✕</button>
+        <div class="pub-vcounter" id="vCounter">1 / 1</div>
+      </div>
+
+      <div class="pub-vright">
+        <button class="pub-vbtn" id="vZoomOut" aria-label="Zoom moins">−</button>
+        <button class="pub-vbtn" id="vZoomReset" aria-label="Réinitialiser zoom">100%</button>
+        <button class="pub-vbtn" id="vZoomIn" aria-label="Zoom plus">+</button>
+        <a class="pub-vbtn" id="vOpen" href="#" target="_blank" rel="noopener" aria-label="Ouvrir l'image">↗</a>
+      </div>
+    </div>
+
+    <button class="pub-vnav prev" id="vPrev" aria-label="Précédent">‹</button>
+    <button class="pub-vnav next" id="vNext" aria-label="Suivant">›</button>
+
+    <div class="pub-stage" id="vStage">
+      <img id="vImg" alt="" draggable="false" />
+    </div>
+
+    <div class="pub-viewer-bottom" id="vCaption"></div>
+  </div>
+
+  <script>
+    const pins = Array.from(document.querySelectorAll(".pub-pin"));
+
+    const viewer = document.getElementById("viewer");
+    const vImg = document.getElementById("vImg");
+    const vStage = document.getElementById("vStage");
+    const vCaption = document.getElementById("vCaption");
+
+    const vClose = document.getElementById("vClose");
+    const vPrev  = document.getElementById("vPrev");
+    const vNext  = document.getElementById("vNext");
+    const vCounter = document.getElementById("vCounter");
+
+    const vZoomIn = document.getElementById("vZoomIn");
+    const vZoomOut = document.getElementById("vZoomOut");
+    const vZoomReset = document.getElementById("vZoomReset");
+    const vOpen = document.getElementById("vOpen");
+
+    let currentIndex = 0;
+
+    // Transform zoom/pan
+    let scale = 1, tx = 0, ty = 0;
+
+    // Drag
+    let dragging = false;
+    let startX = 0, startY = 0, startTx = 0, startTy = 0;
+
+    // Swipe
+    let touchStartX = 0, touchStartY = 0;
+
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+
+    function applyTransform(){
+      const maxPanX = (scale - 1) * (window.innerWidth * 0.25);
+      const maxPanY = (scale - 1) * (window.innerHeight * 0.25);
+      tx = clamp(tx, -maxPanX, maxPanX);
+      ty = clamp(ty, -maxPanY, maxPanY);
+
+      vImg.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+      vZoomReset.textContent = `${Math.round(scale * 100)}%`;
+    }
+
+    function resetView(){
+      scale = 1; tx = 0; ty = 0;
+      applyTransform();
+    }
+
+    function openViewer(index){
+      currentIndex = clamp(index, 0, pins.length - 1);
+      const pin = pins[currentIndex];
+
+      const full = pin.getAttribute("data-full") || pin.querySelector("img")?.src;
+      const caption = pin.getAttribute("data-caption") || pin.querySelector("img")?.alt || "";
+
+      vImg.src = full;
+      vImg.alt = caption;
+      vCaption.textContent = caption;
+      vOpen.href = full;
+
+      vCounter.textContent = `${currentIndex + 1} / ${pins.length}`;
+
+      resetView();
+
+      viewer.classList.remove("hidden");
+      viewer.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeViewer(){
+      viewer.classList.add("hidden");
+      viewer.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      vImg.src = "";
+    }
+
+    function next(){ openViewer((currentIndex + 1) % pins.length); }
+    function prev(){ openViewer((currentIndex - 1 + pins.length) % pins.length); }
+
+    pins.forEach((pin, i) => pin.addEventListener("click", () => openViewer(i)));
+
+    vClose.addEventListener("click", closeViewer);
+    vNext.addEventListener("click", next);
+    vPrev.addEventListener("click", prev);
+
+    // clic sur le fond sombre (pas l'image) = fermer
+    viewer.addEventListener("click", (e) => { if (e.target === viewer) closeViewer(); });
+
+    // clavier
+    window.addEventListener("keydown", (e) => {
+      if (viewer.classList.contains("hidden")) return;
+      if (e.key === "Escape") closeViewer();
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+      if (e.key === "+" || e.key === "=") { scale = clamp(scale * 1.15, 1, 6); applyTransform(); }
+      if (e.key === "-" || e.key === "_") { scale = clamp(scale / 1.15, 1, 6); applyTransform(); }
+    });
+
+    // zoom boutons
+    vZoomIn.addEventListener("click", () => { scale = clamp(scale * 1.2, 1, 6); applyTransform(); });
+    vZoomOut.addEventListener("click", () => { scale = clamp(scale / 1.2, 1, 6); applyTransform(); });
+    vZoomReset.addEventListener("click", resetView);
+
+    // zoom molette
+    vStage.addEventListener("wheel", (e) => {
+      if (viewer.classList.contains("hidden")) return;
+      e.preventDefault();
+      const dir = e.deltaY > 0 ? -1 : 1;
+      const factor = dir > 0 ? 1.12 : 1/1.12;
+      scale = clamp(scale * factor, 1, 6);
+      applyTransform();
+    }, { passive: false });
+
+    // double click = toggle zoom
+    vStage.addEventListener("dblclick", () => {
+      if (scale === 1) { scale = 2; }
+      else { scale = 1; tx = 0; ty = 0; }
+      applyTransform();
+    });
+
+    // drag si zoom > 1
+    vStage.addEventListener("pointerdown", (e) => {
+      if (scale <= 1) return;
+      dragging = true;
+      vImg.classList.add("dragging");
+      startX = e.clientX; startY = e.clientY;
+      startTx = tx; startTy = ty;
+      vStage.setPointerCapture(e.pointerId);
+    });
+
+    vStage.addEventListener("pointermove", (e) => {
+      if (!dragging) return;
+      tx = startTx + (e.clientX - startX);
+      ty = startTy + (e.clientY - startY);
+      applyTransform();
+    });
+
+    vStage.addEventListener("pointerup", () => {
+      dragging = false;
+      vImg.classList.remove("dragging");
+    });
+
+    // swipe mobile (si pas zoomé)
+    vStage.addEventListener("touchstart", (e) => {
+      if (scale > 1) return;
+      if (!e.touches || e.touches.length !== 1) return;
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    vStage.addEventListener("touchend", (e) => {
+      if (scale > 1) return;
+      const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+      if (!t) return;
+      const dx = t.clientX - touchStartX;
+      const dy = t.clientY - touchStartY;
+
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) next(); else prev();
+      }
+    }, { passive: true });
+  </script>
+</body>
+</html>
