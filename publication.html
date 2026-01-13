@@ -3,108 +3,110 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Publications</title>
+  <title>Produit</title>
+  <link rel="stylesheet" href="/site.css">
 
-  <!-- Comme tes autres pages -->
-  <link rel="stylesheet" href="/style.css">
 </head>
+<body>
 
-<body class="pub-page">
-
-  <!-- NAV (reprend tes liens, adapte si besoin) -->
   <header class="nav">
-    <div class="nav-inner">
-      <a class="brand" href="/index.html" aria-label="Accueil">
-        <!-- Mets ton logo dans public/images/logo.png -->
-        <img src="/images/logo.png" alt="AM Composit" class="brand-logo">
-      </a>
+    <div class="container nav-inner">
+      <a class="brand" href="/index.html" aria-label="AM Composit">
+  <img src="/Images/Logos/AM_LOGO_ONLY_WHITE_CLEAN - Copie1.png" alt="AM Composit" class="brand-logo">
+</a>
 
       <nav class="nav-links">
-        <a href="/index.html">Accueil 3D</a>
         <a href="/produit.html">Produit</a>
         <a href="/boutique.html">Boutique</a>
-        <a href="/publication.html" aria-current="page">Publications</a>
+        
+
       </nav>
     </div>
   </header>
 
-  <main class="pub-wrap">
-    <div class="pub-masonry" id="masonry">
-      <!-- Mets tes images dans public/images/publications/ -->
-      <div class="pub-pin" data-full="/images/publications/img1.jpg" data-caption="Exemple 1">
-        <img src="/images/publications/img1.jpg" alt="Exemple 1" loading="lazy">
-      </div>
-
-      <div class="pub-pin" data-full="/images/publications/img2.jpg" data-caption="Exemple 2">
-        <img src="/images/publications/img2.jpg" alt="Exemple 2" loading="lazy">
-      </div>
-
-      <div class="pub-pin" data-full="/images/publications/img3.jpg" data-caption="Exemple 3">
-        <img src="/images/publications/img3.jpg" alt="Exemple 3" loading="lazy">
-      </div>
-
-      <div class="pub-pin" data-full="/images/publications/img4.jpg" data-caption="Exemple 4">
-        <img src="/images/publications/img4.jpg" alt="Exemple 4" loading="lazy">
-      </div>
-
-      <!-- Duplique des blocs pub-pin autant que tu veux -->
+  <main class="container publications">
+    <div class="page-head">
+      <h1 class="page-title">Publications</h1>
+      <p class="page-subtitle">Clique sur une image pour l’ouvrir en plein écran.</p>
     </div>
+
+    <!-- Grille Pinterest -->
+    <div class="pub-grid" id="pubGrid"></div>
   </main>
 
-  <!-- Viewer plein écran style Google Images -->
-  <div id="viewer" class="pub-viewer hidden" aria-hidden="true">
-    <div class="pub-viewer-top">
-      <div class="pub-vleft">
-        <button class="pub-vbtn" id="vClose" aria-label="Fermer">✕</button>
-        <div class="pub-vcounter" id="vCounter">1 / 1</div>
+  <!-- Viewer plein écran (Google Images style) -->
+  <div class="viewer" id="viewer" aria-hidden="true">
+    <div class="viewer-top">
+      <div class="viewer-left">
+        <button class="viewer-btn" id="vClose" aria-label="Fermer">✕</button>
+        <div class="viewer-counter" id="vCounter">1 / 1</div>
       </div>
 
-      <div class="pub-vright">
-        <button class="pub-vbtn" id="vZoomOut" aria-label="Zoom moins">−</button>
-        <button class="pub-vbtn" id="vZoomReset" aria-label="Réinitialiser zoom">100%</button>
-        <button class="pub-vbtn" id="vZoomIn" aria-label="Zoom plus">+</button>
-        <a class="pub-vbtn" id="vOpen" href="#" target="_blank" rel="noopener" aria-label="Ouvrir l'image">↗</a>
+      <div class="viewer-right">
+        <button class="viewer-btn" id="vZoomOut" aria-label="Zoom -">−</button>
+        <button class="viewer-btn" id="vZoomReset" aria-label="Reset zoom">100%</button>
+        <button class="viewer-btn" id="vZoomIn" aria-label="Zoom +">+</button>
+        <a class="viewer-btn" id="vOpen" href="#" target="_blank" rel="noopener" aria-label="Ouvrir l'image">↗</a>
       </div>
     </div>
 
-    <button class="pub-vnav prev" id="vPrev" aria-label="Précédent">‹</button>
-    <button class="pub-vnav next" id="vNext" aria-label="Suivant">›</button>
+    <button class="viewer-nav prev" id="vPrev" aria-label="Précédent">‹</button>
+    <button class="viewer-nav next" id="vNext" aria-label="Suivant">›</button>
 
-    <div class="pub-stage" id="vStage">
-      <img id="vImg" alt="" draggable="false" />
+    <div class="viewer-stage" id="vStage">
+      <img id="vImg" alt="" draggable="false">
     </div>
 
-    <div class="pub-viewer-bottom" id="vCaption"></div>
+    <div class="viewer-caption" id="vCaption"></div>
   </div>
 
   <script>
-    const pins = Array.from(document.querySelectorAll(".pub-pin"));
+    // ✅ Mets tes noms de fichiers ici (plus simple que dupliquer 50 blocs HTML)
+  const items = [
+  { src: "/public.jpg", caption: "TEst 1" },
+  
+];
 
+    
+    ;
+
+    const grid = document.getElementById("pubGrid");
+
+    // Build grid
+    items.forEach((it, i) => {
+      const a = document.createElement("a");
+      a.className = "pub-item";
+      a.href = it.src;
+      a.setAttribute("data-index", String(i));
+      a.setAttribute("data-caption", it.caption || "");
+
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.src = it.src;
+      img.alt = it.caption || "";
+
+      a.appendChild(img);
+      grid.appendChild(a);
+    });
+
+    // Viewer logic
     const viewer = document.getElementById("viewer");
     const vImg = document.getElementById("vImg");
     const vStage = document.getElementById("vStage");
     const vCaption = document.getElementById("vCaption");
+    const vCounter = document.getElementById("vCounter");
+    const vOpen = document.getElementById("vOpen");
 
     const vClose = document.getElementById("vClose");
-    const vPrev  = document.getElementById("vPrev");
-    const vNext  = document.getElementById("vNext");
-    const vCounter = document.getElementById("vCounter");
-
+    const vPrev = document.getElementById("vPrev");
+    const vNext = document.getElementById("vNext");
     const vZoomIn = document.getElementById("vZoomIn");
     const vZoomOut = document.getElementById("vZoomOut");
     const vZoomReset = document.getElementById("vZoomReset");
-    const vOpen = document.getElementById("vOpen");
 
-    let currentIndex = 0;
-
-    // Transform zoom/pan
+    let current = 0;
     let scale = 1, tx = 0, ty = 0;
-
-    // Drag
-    let dragging = false;
-    let startX = 0, startY = 0, startTx = 0, startTy = 0;
-
-    // Swipe
+    let dragging = false, startX = 0, startY = 0, startTx = 0, startTy = 0;
     let touchStartX = 0, touchStartY = 0;
 
     function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
@@ -114,89 +116,79 @@
       const maxPanY = (scale - 1) * (window.innerHeight * 0.25);
       tx = clamp(tx, -maxPanX, maxPanX);
       ty = clamp(ty, -maxPanY, maxPanY);
-
       vImg.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
       vZoomReset.textContent = `${Math.round(scale * 100)}%`;
     }
 
-    function resetView(){
-      scale = 1; tx = 0; ty = 0;
-      applyTransform();
-    }
+    function resetView(){ scale = 1; tx = 0; ty = 0; applyTransform(); }
 
-    function openViewer(index){
-      currentIndex = clamp(index, 0, pins.length - 1);
-      const pin = pins[currentIndex];
+    function openAt(index){
+      current = (index + items.length) % items.length;
+      const it = items[current];
 
-      const full = pin.getAttribute("data-full") || pin.querySelector("img")?.src;
-      const caption = pin.getAttribute("data-caption") || pin.querySelector("img")?.alt || "";
-
-      vImg.src = full;
-      vImg.alt = caption;
-      vCaption.textContent = caption;
-      vOpen.href = full;
-
-      vCounter.textContent = `${currentIndex + 1} / ${pins.length}`;
+      vImg.src = it.src;
+      vImg.alt = it.caption || "";
+      vCaption.textContent = it.caption || "";
+      vOpen.href = it.src;
+      vCounter.textContent = `${current + 1} / ${items.length}`;
 
       resetView();
-
-      viewer.classList.remove("hidden");
+      viewer.classList.add("is-open");
       viewer.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
     }
 
     function closeViewer(){
-      viewer.classList.add("hidden");
+      viewer.classList.remove("is-open");
       viewer.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       vImg.src = "";
     }
 
-    function next(){ openViewer((currentIndex + 1) % pins.length); }
-    function prev(){ openViewer((currentIndex - 1 + pins.length) % pins.length); }
+    function next(){ openAt(current + 1); }
+    function prev(){ openAt(current - 1); }
 
-    pins.forEach((pin, i) => pin.addEventListener("click", () => openViewer(i)));
+    // Open on click
+    grid.addEventListener("click", (e) => {
+      const item = e.target.closest(".pub-item");
+      if (!item) return;
+      e.preventDefault();
+      openAt(Number(item.getAttribute("data-index") || "0"));
+    });
 
+    // Buttons
     vClose.addEventListener("click", closeViewer);
     vNext.addEventListener("click", next);
     vPrev.addEventListener("click", prev);
 
-    // clic sur le fond sombre (pas l'image) = fermer
-    viewer.addEventListener("click", (e) => { if (e.target === viewer) closeViewer(); });
+    // Close if click outside image
+    viewer.addEventListener("click", (e) => {
+      if (e.target === viewer) closeViewer();
+    });
 
-    // clavier
+    // Keyboard
     window.addEventListener("keydown", (e) => {
-      if (viewer.classList.contains("hidden")) return;
+      if (!viewer.classList.contains("is-open")) return;
       if (e.key === "Escape") closeViewer();
       if (e.key === "ArrowRight") next();
       if (e.key === "ArrowLeft") prev();
-      if (e.key === "+" || e.key === "=") { scale = clamp(scale * 1.15, 1, 6); applyTransform(); }
-      if (e.key === "-" || e.key === "_") { scale = clamp(scale / 1.15, 1, 6); applyTransform(); }
     });
 
-    // zoom boutons
+    // Zoom buttons
     vZoomIn.addEventListener("click", () => { scale = clamp(scale * 1.2, 1, 6); applyTransform(); });
     vZoomOut.addEventListener("click", () => { scale = clamp(scale / 1.2, 1, 6); applyTransform(); });
     vZoomReset.addEventListener("click", resetView);
 
-    // zoom molette
+    // Wheel zoom
     vStage.addEventListener("wheel", (e) => {
-      if (viewer.classList.contains("hidden")) return;
+      if (!viewer.classList.contains("is-open")) return;
       e.preventDefault();
-      const dir = e.deltaY > 0 ? -1 : 1;
-      const factor = dir > 0 ? 1.12 : 1/1.12;
+      const factor = e.deltaY < 0 ? 1.12 : (1/1.12);
       scale = clamp(scale * factor, 1, 6);
       applyTransform();
     }, { passive: false });
 
-    // double click = toggle zoom
-    vStage.addEventListener("dblclick", () => {
-      if (scale === 1) { scale = 2; }
-      else { scale = 1; tx = 0; ty = 0; }
-      applyTransform();
-    });
-
-    // drag si zoom > 1
+    // Drag (only when zoomed)
     vStage.addEventListener("pointerdown", (e) => {
       if (scale <= 1) return;
       dragging = true;
@@ -218,7 +210,7 @@
       vImg.classList.remove("dragging");
     });
 
-    // swipe mobile (si pas zoomé)
+    // Mobile swipe (when not zoomed)
     vStage.addEventListener("touchstart", (e) => {
       if (scale > 1) return;
       if (!e.touches || e.touches.length !== 1) return;
@@ -228,15 +220,13 @@
 
     vStage.addEventListener("touchend", (e) => {
       if (scale > 1) return;
-      const t = (e.changedTouches && e.changedTouches[0]) ? e.changedTouches[0] : null;
+      const t = e.changedTouches?.[0];
       if (!t) return;
       const dx = t.clientX - touchStartX;
       const dy = t.clientY - touchStartY;
-
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        if (dx < 0) next(); else prev();
-      }
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) (dx < 0) ? next() : prev();
     }, { passive: true });
   </script>
 </body>
 </html>
+
