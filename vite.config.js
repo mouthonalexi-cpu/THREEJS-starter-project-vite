@@ -8,9 +8,11 @@ export default defineConfig({
     rollupOptions: {
       input: {
         index: resolve(__dirname, "index.html"),
-        produit: resolve(__dirname, "produit.html"),
+        produit: resolve(__dirname, "produit-selec.html"),
         boutique: resolve(__dirname, "boutique.html"),
         publication: resolve(__dirname, "publication.html"),
+        produit: resolve(__dirname, "produit-PTC01.html"),
+        produit: resolve(__dirname, "produit-PTC02.html"),
       },
     },
   },
