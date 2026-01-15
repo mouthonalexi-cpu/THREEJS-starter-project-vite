@@ -14,7 +14,12 @@ html,body{height:100%}
 body { font-weight: 300; 
   margin:0;
   font-family: "Calibri Light","Calibri","Calibri",Arial,sans-serif;
-  background: radial-gradient(1200px 700px at 20% 10%, #151830, var(--bg));
+  background:
+  radial-gradient(1200px 900px at 20% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(0,0,0,0) 60%),
+  linear-gradient(180deg, #05060a 0%, var(--bg) 65%, var(--bg) 100%);
+background-repeat: no-repeat;
+background-attachment: fixed;
+
   color:var(--text);
 }
 
@@ -104,7 +109,7 @@ a:hover{opacity:.9}
 
 .products{
   display:grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(1, 3fr);
   gap:14px;
 }
 @media (max-width: 900px){ .products{grid-template-columns: 1fr 1fr} }
