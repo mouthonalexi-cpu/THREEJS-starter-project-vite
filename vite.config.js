@@ -2,14 +2,15 @@ import { defineConfig } from "vite";
 import glsl from "vite-plugin-glsl";
 import { resolve } from "path";
 
+
 export default defineConfig({
-  plugins: [glsl()],
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "index.html"),
+        index: resolve(__dirname, "index.html"),
         produit: resolve(__dirname, "produit.html"),
         boutique: resolve(__dirname, "boutique.html"),
+        publication: resolve(__dirname, "publication.html"),
       },
     },
   },

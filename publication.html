@@ -33,52 +33,117 @@
 
 
 
+        
 
-<div id="giViewer" class="gi-viewer" hidden aria-hidden="true">
-  <div class="gi-top">
-    <button class="gi-btn" id="giClose" aria-label="Fermer">✕</button>
+<style>
+  /* Viewer premium (noms uniques pour éviter conflits) */
+  .gi2-viewer { position: fixed; inset: 0; z-index: 999999; display: none; }
+  .gi2-viewer.is-open { display: block; }
 
-    <div class="gi-actions">
-      <button class="gi-btn" id="giZoomOut" aria-label="Zoom -">−</button>
-      <button class="gi-btn" id="giReset" aria-label="Reset zoom">100%</button>
-      <button class="gi-btn" id="giZoomIn" aria-label="Zoom +">+</button>
-      <a class="gi-btn" id="giOpen" href="#" target="_blank" rel="noopener" aria-label="Ouvrir">↗</a>
+  .gi2-backdrop{
+    position:absolute; inset:0;
+    background:
+      radial-gradient(1200px 900px at 20% 0%, rgba(255,255,255,.10) 0%, rgba(0,0,0,0) 55%),
+      rgba(0,0,0,.78);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+  }
+
+  .gi2-shell{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column;
+    padding: 14px;
+  }
+
+  .gi2-toolbar{
+    display:flex; justify-content:space-between; align-items:center;
+    gap: 10px;
+    pointer-events:none; /* seuls les boutons cliquent */
+  }
+  .gi2-toolbar *{ pointer-events:auto; }
+
+  .gi2-actions{ display:flex; gap:10px; }
+
+  .gi2-btn{
+    height: 42px; min-width: 42px;
+    padding: 0 14px;
+    border-radius: 16px;
+    border: 1px solid rgba(255,255,255,.14);
+    background: rgba(255,255,255,.08);
+    color: rgba(255,255,255,.96);
+    cursor: pointer;
+    display:inline-flex; align-items:center; justify-content:center;
+    text-decoration:none;
+    box-shadow: 0 16px 40px rgba(0,0,0,.35);
+  }
+  .gi2-btn:hover{ background: rgba(255,255,255,.14); }
+
+  /* ✅ ICI: scroll dans le viewer */
+  .gi2-stage{
+    flex: 1;
+    margin-top: 12px;
+    border-radius: 18px;
+    overflow: auto;             /* <— scroll */
+    display:grid;
+    place-items:center;
+    padding: 18px;
+  }
+
+  /* image non “confinée” en hauteur => si elle est grande, tu scroll */
+  .gi2-img{
+    width: auto;
+    height: auto;
+    max-width: min(1400px, 94vw);
+    max-height: none;           /* <— important pour scroll */
+    border-radius: 18px;
+    box-shadow: 0 30px 90px rgba(0,0,0,.55);
+    transform: scale(1);
+    transform-origin: center;
+    transition: transform .12s ease;
+    user-select:none;
+    -webkit-user-drag:none;
+  }
+</style>
+
+<div class="gi2-viewer" id="gi2Viewer" aria-hidden="true">
+  <div class="gi2-backdrop" id="gi2Backdrop"></div>
+
+  <div class="gi2-shell">
+    <div class="gi2-toolbar">
+      <button class="gi2-btn" id="gi2Close" aria-label="Fermer">✕</button>
+
+      <div class="gi2-actions">
+        <button class="gi2-btn" id="gi2ZoomOut">−</button>
+        <button class="gi2-btn" id="gi2Reset">100%</button>
+        <button class="gi2-btn" id="gi2ZoomIn">+</button>
+        <a class="gi2-btn" id="gi2Open" href="#" target="_blank" rel="noopener">↗</a>
+      </div>
     </div>
-  </div>
 
-  <div class="gi-stage" id="giStage">
-    <img id="giImg" alt="" draggable="false">
+    <div class="gi2-stage" id="gi2Stage">
+      <img class="gi2-img" id="gi2Img" alt="">
+    </div>
   </div>
 </div>
 
 <script>
-  const viewer = document.getElementById("giViewer");
-  const stage  = document.getElementById("giStage");
-  const img    = document.getElementById("giImg");
+  const viewer   = document.getElementById("gi2Viewer");
+  const backdrop = document.getElementById("gi2Backdrop");
+  const stage    = document.getElementById("gi2Stage");
+  const img      = document.getElementById("gi2Img");
 
-  const closeBtn = document.getElementById("giClose");
-  const zoomIn   = document.getElementById("giZoomIn");
-  const zoomOut  = document.getElementById("giZoomOut");
-  const resetBtn = document.getElementById("giReset");
-  const openBtn  = document.getElementById("giOpen");
+  const closeBtn = document.getElementById("gi2Close");
+  const zoomIn   = document.getElementById("gi2ZoomIn");
+  const zoomOut  = document.getElementById("gi2ZoomOut");
+  const resetBtn = document.getElementById("gi2Reset");
+  const openBtn  = document.getElementById("gi2Open");
 
-  let scale = 1, tx = 0, ty = 0;
-  let dragging = false, sx = 0, sy = 0, stx = 0, sty = 0;
-
+  let scale = 1;
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
   function apply(){
-    const maxPanX = (scale - 1) * (window.innerWidth  * 0.25);
-    const maxPanY = (scale - 1) * (window.innerHeight * 0.25);
-    tx = clamp(tx, -maxPanX, maxPanX);
-    ty = clamp(ty, -maxPanY, maxPanY);
-    img.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+    img.style.transform = `scale(${scale})`;
     resetBtn.textContent = `${Math.round(scale * 100)}%`;
-  }
-
-  function reset(){
-    scale = 1; tx = 0; ty = 0;
-    apply();
   }
 
   function openViewer(src, alt=""){
@@ -86,70 +151,52 @@
     img.alt = alt;
     openBtn.href = src;
 
-    reset();
-    viewer.hidden = false;
+    scale = 1;
+    apply();
+
+    viewer.classList.add("is-open");
     viewer.setAttribute("aria-hidden", "false");
+
+    // ⚠️ Si tu veux pouvoir scroll la page derrière, commente la ligne suivante
     document.body.style.overflow = "hidden";
   }
 
   function closeViewer(){
-    viewer.hidden = true;
+    viewer.classList.remove("is-open");
     viewer.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
     img.src = "";
   }
 
-  // ✅ Event delegation : marche même si tu ajoutes des images plus tard
+  // clic sur image (data-zoom)
   document.addEventListener("click", (e) => {
-    const targetImg = e.target.closest("img[data-zoom]");
-    if (!targetImg) return;
-    e.preventDefault();
-    openViewer(targetImg.src, targetImg.alt || "");
+    const target = e.target.closest("img[data-zoom]");
+    if (!target) return;
+    openViewer(target.src, target.alt || "");
   });
 
   closeBtn.addEventListener("click", closeViewer);
-
-  viewer.addEventListener("click", (e) => {
-    if (e.target === viewer) closeViewer(); // clic sur fond noir
-  });
+  backdrop.addEventListener("click", closeViewer);
 
   window.addEventListener("keydown", (e) => {
-    if (viewer.hidden) return;
+    if (!viewer.classList.contains("is-open")) return;
     if (e.key === "Escape") closeViewer();
   });
 
-  zoomIn.addEventListener("click", () => { scale = clamp(scale * 1.2, 1, 6); apply(); });
-  zoomOut.addEventListener("click", () => { scale = clamp(scale / 1.2, 1, 6); apply(); });
-  resetBtn.addEventListener("click", reset);
+  zoomIn.addEventListener("click", () => { scale = clamp(scale * 1.15, 1, 6); apply(); });
+  zoomOut.addEventListener("click", () => { scale = clamp(scale / 1.15, 1, 6); apply(); });
+  resetBtn.addEventListener("click", () => { scale = 1; apply(); });
 
+  // molette = zoom (et le scroll reste possible avec trackpad grâce à l'overflow)
   stage.addEventListener("wheel", (e) => {
-    if (viewer.hidden) return;
+    if (!viewer.classList.contains("is-open")) return;
+    if (e.ctrlKey) return; // laisse le pinch/zoom navigateur si ctrl
+    // si tu veux PRIORITÉ au scroll, commente les 3 lignes ci-dessous
     e.preventDefault();
-    const factor = e.deltaY < 0 ? 1.12 : (1/1.12);
+    const factor = e.deltaY < 0 ? 1.10 : (1/1.10);
     scale = clamp(scale * factor, 1, 6);
     apply();
   }, { passive: false });
-
-  stage.addEventListener("pointerdown", (e) => {
-    if (scale <= 1) return;
-    dragging = true;
-    img.classList.add("dragging");
-    sx = e.clientX; sy = e.clientY;
-    stx = tx; sty = ty;
-    stage.setPointerCapture(e.pointerId);
-  });
-
-  stage.addEventListener("pointermove", (e) => {
-    if (!dragging) return;
-    tx = stx + (e.clientX - sx);
-    ty = sty + (e.clientY - sy);
-    apply();
-  });
-
-  stage.addEventListener("pointerup", () => {
-    dragging = false;
-    img.classList.remove("dragging");
-  });
 </script>
 
 
