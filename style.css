@@ -70,3 +70,19 @@ img, video, canvas, svg{
   height: auto;
   display: block;
 }
+html, body{
+  margin: 0;
+  padding: 0;
+  background: var(--bg);      /* ou ton dégradé */
+  background-color: var(--bg);
+}
+
+/* iPhone notch safe-area + pas de blanc */
+body{
+  padding-top: env(safe-area-inset-top);
+}
+
+/* si tu utilises un wrapper plein écran */
+.fullscreen{
+  min-height: 100dvh; /* mieux que 100vh sur mobile */
+}
